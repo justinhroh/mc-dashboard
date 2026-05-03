@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>MC Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:Georgia,serif;background:#faf8f4;color:#1a1208}
+
+/* ---------- password gate ---------- */
+#gate{position:fixed;inset:0;background:linear-gradient(135deg,#1a1208 0%,#3d2b0e 60%,#5c3d12 100%);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1.5rem}
+#gate.hidden{display:none}
+.gate-card{background:#faf8f4;border-radius:14px;padding:2rem 1.6rem;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.gate-icon{font-size:2.4rem;margin-bottom:.5rem}
+.gate-title{font-size:1.15rem;font-weight:bold;color:#1a1208;margin-bottom:.3rem}
+.gate-sub{font-family:sans-serif;font-size:.78rem;color:#7a6a4a;margin-bottom:1.2rem;line-height:1.5}
+#gpw{width:100%;padding:.85rem 1rem;border:1px solid #d4a03c;border-radius:8px;font-family:sans-serif;font-size:1rem;background:#fff;color:#1a1208;margin-bottom:.7rem}
+#gpw:focus{outline:none;border-color:#8b5e0a;box-shadow:0 0 0 3px rgba(212,160,60,.2)}
+#gbtn{width:100%;background:#8b5e0a;color:#fff;border:none;padding:.85rem;border-radius:8px;font-family:sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;letter-spacing:.05em}
+#gbtn:hover{background:#6d4807}
+#gbtn:disabled{background:#bba577;cursor:wait}
+#gerr{font-family:sans-serif;font-size:.78rem;color:#991b1b;margin-top:.7rem;min-height:1rem}
+
+/* ---------- main app ---------- */
+.hdr{background:linear-gradient(135deg,#1a1208 0%,#3d2b0e 60%,#5c3d12 100%);padding:1.5rem 1.2rem 1.2rem}
+.ch{color:#d4a03c;font-family:sans-serif;font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:.3rem}
+.hdr h1{color:#fff;font-size:1.7rem;font-weight:normal;margin-bottom:.2rem}
+.tag{color:#d4a03c;font-family:sans-serif;font-size:.82rem;font-style:italic;margin-bottom:1rem}
+.nbw{background:rgba(212,160,60,.15);border:1px solid rgba(212,160,60,.35);border-radius:8px;padding:.7rem 1rem;display:flex;gap:.8rem;align-items:center}
+.nbl{color:#d4a03c;font-family:sans-serif;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase}
+.nbt{color:#fff;font-family:sans-serif;font-size:.88rem;font-weight:600}
+.nbs{color:#c9b88a;font-family:sans-serif;font-size:.75rem}
+
+nav{display:flex;background:#fff;border-bottom:2px solid #e8e0d0;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.n{flex:1;padding:.85rem .4rem .7rem;border:none;background:none;cursor:pointer;font-family:sans-serif;font-size:.7rem;font-weight:600;color:#888;border-bottom:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:.25rem;transition:all .15s}
+.n.on{color:#8b5e0a;border-bottom-color:#d4a03c}
+.ni{font-size:1.1rem}
+
+.tab{padding:1.4rem 1.1rem;max-width:680px;margin:0 auto;display:none}
+.tab.on{display:block}
+.ttl{font-size:1.25rem;font-weight:bold;color:#1a1208;margin-bottom:.15rem}
+.sub{font-family:sans-serif;font-size:.72rem;color:#999;margin-bottom:1.1rem}
+.card{background:#fff;border-radius:12px;padding:1rem 1.1rem;margin-bottom:.9rem;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid #e8e0d0}
+.nxt{border:2px solid #d4a03c}
+.nxt-b{background:#d4a03c;margin:-1rem -1.1rem .75rem;padding:.3rem 1rem;font-family:sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.15em;color:#fff;text-transform:uppercase;border-radius:10px 10px 0 0}
+.mh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem}
+.dl{font-family:sans-serif;font-size:.62rem;color:#b08020;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.md{font-size:1.05rem;font-weight:bold}
+.dr{font-family:sans-serif;font-size:.78rem;margin-bottom:.35rem;color:#2a1a08}
+.lb{color:#999;margin-right:.2rem}
+
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem}
+.pp{display:flex;align-items:center;gap:.5rem}
+.av{width:28px;height:28px;border-radius:50%;background:#f0e8d8;display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-weight:700;color:#8b5e0a;font-size:.72rem;flex-shrink:0}
+.pn{font-family:sans-serif;font-size:.83rem;font-weight:600}
+.pm{display:flex;gap:.4rem;align-items:center}
+.tb{font-family:sans-serif;font-size:.6rem;font-weight:700;padding:.18rem .45rem;border-radius:4px;text-transform:uppercase;letter-spacing:.08em}
+.pd{font-family:sans-serif;font-size:.7rem;color:#aaa}
+.pt{font-size:.86rem;line-height:1.65;color:#3a2a10}
+
+.vb{background:linear-gradient(135deg,#1a1208,#3d2b0e);border-radius:12px;padding:1.3rem;margin-bottom:1rem}
+.vl{color:#d4a03c;font-family:sans-serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem}
+.vt{color:#fff;font-size:1rem;line-height:1.7}
+.sb{background:#fff;border:1px solid #e8e0d0;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1.1rem}
+.sl{color:#b08020;font-family:sans-serif;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:.4rem}
+.sv{font-size:.86rem;line-height:1.7;color:#3a2a10;font-style:italic;margin-bottom:.3rem}
+.sr{font-family:sans-serif;font-size:.73rem;color:#b08020;font-weight:600}
+.cl{font-family:sans-serif;font-size:.68rem;color:#aaa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.6rem}
+.vc{display:flex;gap:.9rem;align-items:flex-start}
+.vi{color:#d4a03c;font-size:1.2rem;flex-shrink:0;padding-top:.1rem}
+.vtt{font-family:sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.3rem}
+.vd{font-size:.83rem;color:#5a4a30;line-height:1.6}
+
+.smb{background:linear-gradient(135deg,#1a1208,#3d2b0e);border-radius:12px;padding:1.3rem;margin-bottom:1rem;color:#fff}
+.sms{color:#d4a03c;font-family:sans-serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem}
+.smt{font-size:1.3rem;font-weight:normal;margin-bottom:.4rem}
+.smm{display:flex;gap:1rem;font-family:sans-serif;font-size:.76rem;color:#c9b88a;flex-wrap:wrap}
+.smc{background:#fff;border-radius:10px;padding:1.1rem;border:1px solid #e8e0d0;margin-bottom:1rem}
+.xml{font-family:sans-serif;font-size:.62rem;color:#b08020;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:.5rem}
+.xmt{font-size:.87rem;line-height:1.75;color:#3a2a10}
+.sma{display:block;background:#d4a03c;color:#fff;text-align:center;padding:.85rem;border-radius:10px;font-family:sans-serif;font-weight:700;font-size:.83rem;text-decoration:none}
+
+.up{text-align:center;font-family:sans-serif;font-size:.68rem;color:#ccc;padding:1.5rem 1rem}
+.up button{background:none;border:none;color:#bbb;font-family:sans-serif;font-size:.7rem;cursor:pointer;text-decoration:underline;margin-left:.5rem}
+.wc{background:#fff7ed;border:1px solid #fed7aa;margin-bottom:1rem}
+.wt{font-family:sans-serif;font-size:.77rem;color:#9a3412}
+.empty{color:#999;font-family:sans-serif;font-size:.85rem;text-align:center;padding:2rem 1rem}
+
+@media (min-width:720px){
+  .hdr{padding:2rem 1.6rem 1.6rem}
+  .hdr h1{font-size:2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ password gate ============ -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-icon">&#128274;</div>
+    <div class="gate-title">MC Dashboard</div>
+    <div class="gate-sub">This page is for our Missional Community.<br>Enter the shared passphrase to continue.</div>
+    <input id="gpw" type="password" placeholder="Passphrase" autocomplete="current-password" autofocus>
+    <button id="gbtn">Unlock</button>
+    <div id="gerr"></div>
+  </div>
+</div>
+
+<!-- ============ main content (hidden until unlocked) ============ -->
+<div id="app" style="display:none">
+
+<div class="hdr">
+  <div class="ch">Austin Stone Community Church</div>
+  <h1>Missional Community</h1>
+  <p class="tag">Walk together. Love the city. Make disciples.</p>
+  <div class="nbw">
+    <div style="font-size:1.3rem">&#128197;</div>
+    <div>
+      <div class="nbl">Next Meeting</div>
+      <div class="nbt" id="nb-title">&mdash;</div>
+      <div class="nbs" id="nb-loc">&mdash;</div>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <button class="n on" data-tab="calendar"><span class="ni">&#128197;</span>Meetings</button>
+  <button class="n" data-tab="prayer"><span class="ni">&#128591;</span>Prayer</button>
+  <button class="n" data-tab="values"><span class="ni">&#10022;</span>Vision</button>
+  <button class="n" data-tab="sermon"><span class="ni">&#128214;</span>Sunday</button>
+</nav>
+
+<div id="calendar" class="tab on">
+  <div class="ttl">Meeting Calendar</div>
+  <div class="sub" id="cal-sub">Weekly community gatherings</div>
+  <div id="cal-list"></div>
+</div>
+
+<div id="prayer" class="tab">
+  <div class="ttl">Prayer Requests</div>
+  <div class="sub">From #prayer on Slack &middot; auto-updated</div>
+  <div class="card wc"><p class="wt">&#128276; Share requests in <strong>#prayer</strong> on Slack &mdash; they sync here automatically.</p></div>
+  <div id="pr-list"></div>
+</div>
+
+<div id="values" class="tab">
+  <div class="ttl">Vision &amp; Values</div>
+  <div class="sub">Who we are and why we gather</div>
+  <div class="vb"><div class="vl">Our Vision</div><div class="vt">As a Missional Community within The Austin Stone, we exist to: Love God, love the church, love the city, and love the nations &mdash; by following Jesus together in gospel-centered community and mission.</div></div>
+  <div class="sb"><div class="sl">&#128214; Monthly Scripture</div><div class="sv" id="ms-text">&mdash;</div><div class="sr" id="ms-ref">&mdash;</div></div>
+  <div class="cl">Our Commitments</div>
+  <div class="card vc"><div class="vi">&#10022;</div><div><div class="vtt">Be Here</div><p class="vd">Show up consistently and strive to actively take part in the group. Presence is a form of love &mdash; we commit to being here for one another week after week.</p></div></div>
+  <div class="card vc"><div class="vi">&#10022;</div><div><div class="vtt">Be Honest</div><p class="vd">Pursue real relationships with each other and not a put-together version of yourself. We are a safe place for the real you &mdash; struggles, doubts, and all.</p></div></div>
+  <div class="card vc"><div class="vi">&#10022;</div><div><div class="vtt">Be Holy</div><p class="vd">Strive to practice the spiritual disciplines that stir our affections for Jesus. We fast together, study the Word together, and hold each other to a higher call.</p></div></div>
+  <div class="card vc"><div class="vi">&#10022;</div><div><div class="vtt">Be Hospitable</div><p class="vd">Have a sent-ness mentality and share Jesus with the world. We open our homes and our lives to show the love of Jesus to our neighbors and city.</p></div></div>
+</div>
+
+<div id="sermon" class="tab">
+  <div class="ttl">Last Sunday's Sermon</div>
+  <div class="sub">Austin Stone &middot; auto-updated</div>
+  <div id="sermon-body"></div>
+</div>
+
+<div class="up">
+  Last updated: <span id="lu">&mdash;</span>
+  <button onclick="signOut()">Sign out</button>
+</div>
+
+</div>
+
+<script>
+/* ---------- crypto helpers ---------- */
+const STORAGE_KEY = 'mc_pw_v1';
+
+function b64ToBuf(b64){
+  const s = atob(b64);
+  const buf = new Uint8Array(s.length);
+  for(let i=0;i<s.length;i++) buf[i] = s.charCodeAt(i);
+  return buf.buffer;
+}
+
+async function deriveKey(password, salt){
+  const enc = new TextEncoder();
+  const baseKey = await crypto.subtle.importKey(
+    'raw', enc.encode(password), {name:'PBKDF2'}, false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt, iterations:200000, hash:'SHA-256'},
+    baseKey,
+    {name:'AES-GCM', length:256},
+    false,
+    ['decrypt']
+  );
+}
+
+async function decryptData(password){
+  const resp = await fetch('./data.json?t=' + Date.now(), {cache:'no-store'});
+  if(!resp.ok) throw new Error('Could not load data file.');
+  const blob = await resp.json();
+  if(blob.v !== 1) throw new Error('Unknown data version.');
+  const salt = b64ToBuf(blob.salt);
+  const iv = b64ToBuf(blob.iv);
+  const ct = b64ToBuf(blob.ciphertext);
+  const key = await deriveKey(password, salt);
+  let plain;
+  try {
+    plain = await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, ct);
+  } catch(e){
+    throw new Error('Wrong passphrase.');
+  }
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+
+/* ---------- gate UI ---------- */
+const gate = document.getElementById('gate');
+const gpw = document.getElementById('gpw');
+const gbtn = document.getElementById('gbtn');
+const gerr = document.getElementById('gerr');
+
+async function tryUnlock(password, remember){
+  gerr.textContent = '';
+  gbtn.disabled = true;
+  gbtn.textContent = 'Unlocking...';
+  try {
+    const data = await decryptData(password);
+    if(remember) sessionStorage.setItem(STORAGE_KEY, password);
+    renderApp(data);
+    gate.classList.add('hidden');
+    document.getElementById('app').style.display = 'block';
+  } catch(e){
+    gerr.textContent = e.message || 'Could not unlock.';
+    sessionStorage.removeItem(STORAGE_KEY);
+  } finally {
+    gbtn.disabled = false;
+    gbtn.textContent = 'Unlock';
+  }
+}
+
+gbtn.addEventListener('click', () => tryUnlock(gpw.value, true));
+gpw.addEventListener('keydown', e => { if(e.key==='Enter') tryUnlock(gpw.value, true); });
+
+function signOut(){
+  sessionStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+/* ---------- rendering ---------- */
+function esc(s){
+  if(s==null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function categoryStyle(cat){
+  if(cat === 'praise')  return {bg:'#d1fae5', fg:'#065f46', label:'Praise &#127881;', border:'#065f46'};
+  if(cat === 'urgent')  return {bg:'#fee2e2', fg:'#991b1b', label:'Urgent &#128591;', border:'#991b1b'};
+  if(cat === 'update')  return {bg:'#fef3c7', fg:'#92400e', label:'Update', border:'#92400e'};
+  return {bg:'#eff6ff', fg:'#1e40af', label:'Prayer', border:'#1e40af'};
+}
+
+function renderCalendar(d){
+  const list = document.getElementById('cal-list');
+  list.innerHTML = '';
+  if(d.calendar && d.calendar.length){
+    document.getElementById('cal-sub').textContent =
+      'Weekly community gatherings · ' + (d.calendarMonth || '');
+  }
+  (d.calendar || []).forEach((m, i) => {
+    const isNext = i === 0;
+    const card = document.createElement('div');
+    card.className = 'card' + (isNext ? ' nxt' : '');
+    let banner = isNext ? '<div class="nxt-b">&#8593; Next Meeting</div>' : '';
+    card.innerHTML = banner +
+      '<div class="mh"><div><div class="dl">Thursday · ' + esc(m.type) + '</div><div class="md">' + esc(m.date) + '</div></div></div>' +
+      '<div class="dr">&#128205; <span class="lb">Location:</span> ' + esc(m.location) + '</div>' +
+      '<div class="dr">&#127373; <span class="lb">Meal:</span> ' + esc(m.meal || 'TBD') + '</div>' +
+      '<div class="dr">&#127908; <span class="lb">Leader:</span> ' + esc(m.leader) + '</div>';
+    list.appendChild(card);
+  });
+}
+
+function renderPrayer(d){
+  const list = document.getElementById('pr-list');
+  list.innerHTML = '';
+  if(!d.prayerRequests || !d.prayerRequests.length){
+    list.innerHTML = '<div class="empty">No prayer requests in #prayer yet.</div>';
+    return;
+  }
+  d.prayerRequests.forEach(p => {
+    const s = categoryStyle(p.category);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.borderLeft = '4px solid ' + s.border;
+    card.innerHTML =
+      '<div class="ph"><div class="pp"><div class="av">' + esc(p.initials || '?') + '</div><span class="pn">' + esc(p.name) + '</span></div>' +
+      '<div class="pm"><span class="tb" style="background:' + s.bg + ';color:' + s.fg + '">' + s.label + '</span><span class="pd">' + esc(p.date) + '</span></div></div>' +
+      '<p class="pt">' + esc(p.text) + '</p>';
+    list.appendChild(card);
+  });
+}
+
+function renderSermon(d){
+  const body = document.getElementById('sermon-body');
+  if(!d.sermon){
+    body.innerHTML = '<div class="empty">No sermon data yet. Visit <a href="https://austinstone.org/media/sermons" target="_blank" rel="noopener">austinstone.org/media/sermons</a>.</div>';
+    return;
+  }
+  const s = d.sermon;
+  body.innerHTML =
+    '<div class="smb">' +
+      '<div class="sms">Series · ' + esc(s.series || '') + '</div>' +
+      '<div class="smt">' + esc(s.title || '') + '</div>' +
+      '<div class="smm">' +
+        (s.passage ? '<span>&#128214; ' + esc(s.passage) + '</span>' : '') +
+        (s.preacher ? '<span>&#127908; ' + esc(s.preacher) + '</span>' : '') +
+        (s.date ? '<span>&#128197; ' + esc(s.date) + '</span>' : '') +
+      '</div>' +
+    '</div>' +
+    (s.summary ? '<div class="smc"><div class="xml">Summary</div><div class="xmt">' + esc(s.summary) + '</div></div>' : '') +
+    '<a href="' + esc(s.url || 'https://austinstone.org/media/sermons') + '" target="_blank" rel="noopener" class="sma">Watch Full Sermon on AustinStone.org &rarr;</a>';
+}
+
+function renderApp(d){
+  // header next-meeting banner
+  if(d.calendar && d.calendar.length){
+    const next = d.calendar[0];
+    document.getElementById('nb-title').innerHTML =
+      esc(next.dayLabel || next.date) + ' &middot; ' + esc(next.leader) + ' leading';
+    document.getElementById('nb-loc').textContent = next.location || '';
+  }
+  // monthly scripture
+  if(d.monthlyScripture){
+    document.getElementById('ms-text').textContent = d.monthlyScripture.text || '';
+    document.getElementById('ms-ref').textContent = d.monthlyScripture.reference || '';
+  }
+  renderCalendar(d);
+  renderPrayer(d);
+  renderSermon(d);
+  document.getElementById('lu').textContent = d.lastUpdated || '';
+}
+
+/* ---------- nav ---------- */
+document.querySelectorAll('.n').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('.n').forEach(n => n.classList.remove('on'));
+    document.getElementById(btn.dataset.tab).classList.add('on');
+    btn.classList.add('on');
+  });
+});
+
+/* ---------- auto-unlock if remembered this session ---------- */
+(async function(){
+  const saved = sessionStorage.getItem(STORAGE_KEY);
+  if(saved){ await tryUnlock(saved, false); }
+})();
+</script>
+</body>
+</html>

@@ -81,7 +81,14 @@ nav{display:flex;background:#fff;border-bottom:2px solid #d9d3c0;position:sticky
 .smc{background:#fff;border-radius:10px;padding:1.1rem;border:1px solid #d9d3c0;margin-bottom:1rem}
 .xml{font-family:sans-serif;font-size:.62rem;color:#5e7544;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:.5rem}
 .xmt{font-size:.87rem;line-height:1.75;color:#2d4030}
-.sma{display:block;background:#c9a961;color:#fff;text-align:center;padding:.85rem;border-radius:10px;font-family:sans-serif;font-weight:700;font-size:.83rem;text-decoration:none}
+.sma{display:block;background:#c9a961;color:#fff;text-align:center;padding:.85rem;border-radius:10px;font-family:sans-serif;font-weight:700;font-size:.83rem;text-decoration:none;margin-bottom:.6rem}
+.pcl{font-family:sans-serif;font-size:.65rem;color:#999;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin:.85rem 0 .5rem}
+.pcrow{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem}
+.pcb{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.7rem;border-radius:10px;font-family:sans-serif;font-weight:600;font-size:.78rem;text-decoration:none;border:1px solid #d9d3c0;background:#fff;color:#243823;transition:opacity .15s}
+.pcb:hover{opacity:.85}
+.pcb.spot{background:#1db954;color:#fff;border-color:#1db954}
+.pcb.appl{background:#1c1c1c;color:#fff;border-color:#1c1c1c}
+.pci{font-size:1rem;line-height:1}
 
 .up{text-align:center;font-family:sans-serif;font-size:.68rem;color:#ccc;padding:1.5rem 1rem}
 .up button{background:none;border:none;color:#bbb;font-family:sans-serif;font-size:.7rem;cursor:pointer;text-decoration:underline;margin-left:.5rem}
@@ -328,6 +335,14 @@ function renderSermon(d){
     return;
   }
   const s = d.sermon;
+  const pc = d.podcasts || {};
+  const pcButtons = (pc.spotify || pc.apple)
+    ? '<div class="pcl">Listen on the go</div>' +
+      '<div class="pcrow">' +
+        (pc.spotify ? '<a class="pcb spot" target="_blank" rel="noopener" href="' + esc(pc.spotify) + '"><span class="pci">&#9835;</span> Spotify</a>' : '') +
+        (pc.apple   ? '<a class="pcb appl" target="_blank" rel="noopener" href="' + esc(pc.apple)   + '"><span class="pci">&#127908;</span> Apple</a>' : '') +
+      '</div>'
+    : '';
   body.innerHTML =
     '<div class="smb">' +
       '<div class="sms">Series · ' + esc(s.series || '') + '</div>' +
@@ -339,7 +354,8 @@ function renderSermon(d){
       '</div>' +
     '</div>' +
     (s.summary ? '<div class="smc"><div class="xml">Summary</div><div class="xmt">' + esc(s.summary) + '</div></div>' : '') +
-    '<a href="' + esc(s.url || 'https://austinstone.org/media/sermons') + '" target="_blank" rel="noopener" class="sma">Watch Full Sermon on AustinStone.org &rarr;</a>';
+    '<a href="' + esc(s.url || 'https://austinstone.org/media/sermons') + '" target="_blank" rel="noopener" class="sma">Watch Full Sermon on AustinStone.org &rarr;</a>' +
+    pcButtons;
 }
 
 function renderApp(d){

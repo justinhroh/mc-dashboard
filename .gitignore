@@ -1,0 +1,8 @@
+# Never commit plaintext data or the encryption tooling
+data_plain.json
+build_data.py
+
+# Local cruft
+.DS_Store
+__pycache__/
+*.pyc
